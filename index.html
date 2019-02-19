@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test</title>
+    <style>
+        body, p {
+            margin: 0;
+        }
+        .content__block {
+            background: #e3e3e3;
+            padding: 5px;
+            margin: 5px;
+            width: 500px;
+        }
+
+        .content__row {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .content__row--main {
+            justify-content: flex-start;
+            text-transform: uppercase;
+        }
+
+        .content__cell:first-child {
+            margin-right: 10px;
+        }
+
+        .content__cell:last-child {
+            flex: 1;
+            text-align: right;
+            border-bottom: 1px solid red;
+        }
+    </style>
+</head>
+<body>
+    <div class="content__column"></div><!-- end content__column -->
+
+  <div class="page" data-page-heading="Page1">
+      <div class="page__block" data-block-heading="Block heading 1"></div>
+      <div class="page__block"></div>
+  </div><!-- end page -->
+  <div class="page" data-page-heading="Page2">
+      <div class="page__block" data-block-heading="Block heading 1"></div>
+      <div class="page__block" data-block-heading=""></div>
+      <div class="page__block" data-block-heading="Block heading 3"></div>
+  </div><!-- end page -->
+  <div class="page" data-page-heading="Page3">
+      <div class="page__block" data-block-heading="Block heading 1"></div>
+      <div class="page__block" data-block-heading="Block heading 2"></div>
+      <div class="page__block" data-block-heading=""></div>
+  </div><!-- end page -->
+
+  <script>
+    /* eslint-disable no-console */
+    function addPageNums() {
+        const pages = [...document.querySelectorAll('[data-page-heading]')];
+        pages.forEach((page, index) => {
+            page.dataset.pageNumber = index + 1;
+        });
+    }
+
+    function injectContents() {
+    const pages = [...document.querySelectorAll('[data-page-heading]')];
+    const contentContainer = document.querySelector('.content__column');
+    let contentHTML = '';
+
+    addPageNums();
+
+    pages.forEach(page => {
+        const blocks = [...page.querySelectorAll('[data-block-heading]')];
+        const pageNum = page.dataset.pageNumber;
+
+        if ( page.dataset.pageHeading == '' || blocks.length == 0 ) return;
+
+        contentHTML += `
+          <div class="content__block">
+            <div class="content__row content__row--main">
+              <h4>${page.dataset.pageHeading}</h4>
+            </div> <!-- content__row -->
+        `;
+
+        const blocksHTML = blocks.map(innerBlock => {
+            if ( innerBlock.dataset.blockHeading == '' ) return '';
+
+            return `
+                <div class="content__row">
+                  <div class="content__cell">
+                    <p>
+                      ${innerBlock.dataset.blockHeading}
+                    </p>
+                  </div> <!-- content__cell -->
+                  <div class="content__cell">
+                    <p>
+                      ${pageNum}
+                    <p>
+                  </div> <!-- content__cell -->
+                </div> <!-- content__row -->
+            `;
+        }).join('');
+
+        contentHTML += blocksHTML;
+        contentHTML += '</div> <!-- content__block -->';
+    });
+
+    console.log(contentHTML);
+    contentContainer.innerHTML = contentHTML;
+    }
+
+    injectContents();
+  </script>
+</body>
+</html>
